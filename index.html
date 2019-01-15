@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO </title></head>
+    <body>
+        <h2>Welcome <span id="name"></span></h2>
+        <h2> Listing Tasks <span id="count"></span></h2>
+        <ul id="tasks"></ul>
+        <h3> Add Task  </h3>
+
+            <form id="taskForm">
+            <label for="title">Title </label>
+            <input type="text" id="title" name="title"/><br/>
+
+            <input type="checkbox" id="status" name="status"/><label for="status">isCompleted</label><br/>
+
+            <input type="submit" value="Add"/>
+
+        </form>
+        <br/><br/>
+        
+         <button onclick="resetName()"> Set Name </button>
+         <button onclick="clearName()">Clear Name </button>
+       </body>
+    <script>
+        const nameHandle = document.getElementById('name');
+        const tasksHandle = document.getElementById('tasks');
+        const countHandle = document.getElementById('count');
+        const taskFormHandle = document.getElementById('taskForm');
+        const titleHandle = document.getElementById('title');
+        const statusHandle = document.getElementById('status')
+
+        nameHandle.innerHTML = localStorage.getItem('name');
+
+        let tasks = localStorage.getItem('tasks') ? JSON.parse(localStorage.getItem('tasks')) : [];
+
+        countHandle.innerHTML = tasks.length;
+
+        function buildTaskList(task){
+            let li = document.createElement('li');                     // form creation
+            let text = document.createTextNode(task.title);
+        if(task.status){
+            let s = document.createElement('s');
+            s.appendChild(text);
+            li.appendChild(s);
+        } else {
+            li.appendChild(text);
+        }
+        tasksHandle.appendChild(li);
+        }
+
+        tasks.forEach((task) =>{
+            buildTaskList(task);                                     // for building tasks
+        })
+        
+        taskFormHandle.addEventListener('submit', function(e){
+            // prevent the form from going to new page
+            e.preventDefault();
+            // build an object with the form data
+            let task = {
+                title: titleHandle.value,
+                status: statusHandle.checked
+            }
+            // pass to build a <li> </li>
+            buildTaskList(task);
+
+            // push to array and save in storage
+            tasks.push(task);
+            localStorage.setItem("tasks", JSON.stringify(tasks));
+            taskFormHandle.reset();
+            countHandle.innerHTML = tasks.length;
+
+        }, false)
+
+        function clearName(){
+            localStorage.clear('name');
+            nameHandle.innerHTML = '';
+        }
+        
+        function resetName(){
+                let newName = prompt("Enter your name");
+                if(newName){
+                localStorage.setItem('name', newName);
+                nameHandle.innerHTML = localStorage.getItem('name');
+                }
+            }
+            
+       
+    </script>
+</html>
